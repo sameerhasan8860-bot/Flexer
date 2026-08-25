@@ -1,1 +1,55 @@
-# GitHub Actions workflow
+name: Flexer Telegram Userbot
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+
+    env:
+      BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+      TELEGRAM_API_ID: ${{ secrets.TELEGRAM_API_ID }}
+      TELEGRAM_API_HASH: ${{ secrets.TELEGRAM_API_HASH }}
+      MONGO_URI: ${{ secrets.MONGO_URI }}
+      SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      OWNER_ID: ${{ secrets.OWNER_ID }}
+      MINI_APP_URL: ${{ secrets.MINI_APP_URL }}
+      PORT: 8080
+
+    steps:
+      - name: Checkout Flexer
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+
+      - name: Validate Python sources
+        run: |
+          python -m compileall -q telegram_userbot
+
+      - name: Start Flexer Telegram userbot
+        working-directory: telegram_userbot
+        run: |
+          python main.py
