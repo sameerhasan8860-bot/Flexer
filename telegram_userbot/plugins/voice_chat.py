@@ -1261,6 +1261,7 @@ async def register_commands():
         [
             ".vcjoin <group> — Join an active group Voice Chat from the private control bot",
             ".vcstatus — Show the connected group and playback status",
+            ".livemic — Open the Live Mic Mini App from the private control bot",
             ".vcstop — Stop playback and clear the queue without leaving",
             ".vcleave — Leave and clear the Voice Chat",
             ".play — Play replied audio in the connected Voice Chat",
