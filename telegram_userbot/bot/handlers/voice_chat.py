@@ -9,15 +9,16 @@ import tempfile
 from pathlib import Path
 
 from pytgcalls.exceptions import NoActiveGroupCall
-from telegram import Update
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, WebAppInfo
 from telegram.ext import ContextTypes, MessageHandler, filters
+import config
 from utils.message_ui import reply_html
 
 
 _VOICE_COMMAND_RE = re.compile(
     r"^\s*\.(?P<command>"
     r"vcjoin|vcstatus|vcstop|vcleave|play|pause|resume|queue|clearqueue|"
-    r"volume|mute|unmute"
+    r"volume|mute|unmute|livemic"
     r")"
     r"(?:\s+(?P<args>.*?))?\s*$",
     re.IGNORECASE,
@@ -130,6 +131,25 @@ async def voice_chat_command(
 
     command, args = parsed
     try:
+        if command == "livemic":
+            if args:
+                raise ValueError("Usage: .livemic")
+            mini_app_url = config.mini_app_url()
+            if not mini_app_url:
+                raise RuntimeError(
+                    "Live Mic Mini App URL is not configured. Set MINI_APP_URL first."
+                )
+            await reply_html(
+                message,
+                "🎙️ <b>Live Mic</b>\nOpen the existing Mini App to send your microphone to the active Voice Chat.",
+                reply_markup=InlineKeyboardMarkup(
+                    [[InlineKeyboardButton(
+                        "🎙️ Open Live Mic",
+                        web_app=WebAppInfo(url=mini_app_url),
+                    )]]
+                ),
+            )
+            return
         if command == "vcjoin":
             text = await voice.join_target(args)
         elif command == "vcstatus":
