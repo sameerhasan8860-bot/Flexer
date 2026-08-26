@@ -33,12 +33,12 @@ def _int_list_env(*names: str) -> list[int]:
     return []
 
 
-BOT_TOKEN: str = os.environ.get("BOT_TOKEN", "").strip().strip()
+BOT_TOKEN: str = os.environ.get("BOT_TOKEN", "").strip()
 API_ID: int = _int_env("TELEGRAM_API_ID")
-API_HASH: str = os.environ.get("TELEGRAM_API_HASH", "").strip().strip()
-MONGO_URI: str = os.environ.get("MONGO_URI", "").strip().strip()
-GEMINI_API_KEY: str = os.environ.get("GEMINI_API_KEY", "").strip().strip()
-SESSION_SECRET: str = os.environ.get("SESSION_SECRET", "").strip().strip()
+API_HASH: str = os.environ.get("TELEGRAM_API_HASH", "").strip()
+MONGO_URI: str = os.environ.get("MONGO_URI", "").strip()
+GEMINI_API_KEY: str = os.environ.get("GEMINI_API_KEY", "").strip()
+SESSION_SECRET: str = os.environ.get("SESSION_SECRET", "").strip()
 MINI_APP_URL: str = os.environ.get("MINI_APP_URL", "").strip()
 MINI_APP_PATH: str = "/mini-app/"
 MINI_APP_PUBLIC_PATH: str = os.environ.get(
