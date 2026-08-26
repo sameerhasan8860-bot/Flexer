@@ -5,18 +5,25 @@ from __future__ import annotations
 import html
 import re
 import shutil
+
+import config
 import tempfile
 from pathlib import Path
 
 from pytgcalls.exceptions import NoActiveGroupCall
-from telegram import Update
+from telegram import (
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    Update,
+    WebAppInfo,
+)
 from telegram.ext import ContextTypes, MessageHandler, filters
 from utils.message_ui import reply_html
 
 
 _VOICE_COMMAND_RE = re.compile(
     r"^\s*\.(?P<command>"
-    r"vcjoin|vcstatus|vcstop|vcleave|play|pause|resume|queue|clearqueue|"
+    r"livemic|vcjoin|vcstatus|vcstop|vcleave|play|pause|resume|queue|clearqueue|"
     r"volume|mute|unmute"
     r")"
     r"(?:\s+(?P<args>.*?))?\s*$",
@@ -130,7 +137,24 @@ async def voice_chat_command(
 
     command, args = parsed
     try:
-        if command == "vcjoin":
+        if command == "livemic":
+            mini_app = context.bot_data.get("mini_app_server")
+            mini_app_url = config.mini_app_url()
+            if mini_app is None or not mini_app.is_running or not mini_app_url:
+                await reply_html(
+                    message,
+                    "❌ Live Mic Mini App is not configured or is temporarily unavailable.",
+                )
+                return
+            await reply_html(
+                message,
+                "🎙️ Live Mic is ready. Join a Voice Chat with .vcjoin, then open the microphone.",
+                reply_markup=InlineKeyboardMarkup(
+                    [[InlineKeyboardButton("Open Live Mic", web_app=WebAppInfo(mini_app_url))]]
+                ),
+            )
+            return
+        elif command == "vcjoin":
             text = await voice.join_target(args)
         elif command == "vcstatus":
             text = await voice.control_status()
